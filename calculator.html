@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #222; }
+        .calculator { width: 300px; padding: 15px; border-radius: 10px; background: #333; }
+        .screen { height: 60px; font-size: 2rem; text-align: right; padding: 10px; background: #000; color: black; border-radius: 5px; }
+        .btn { width: 23%; margin: 1%; font-size: 1.5rem; }
+        .btn.operator { background: orange; color: white; }
+        .btn.equal { background: dodgerblue; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <input type="text" id="screen" class="form-control screen" disabled value="0">
+        <div class="mt-2 d-flex flex-wrap">
+            <button class="btn btn-secondary" onclick="clearEntry()">CE</button>
+            <button class="btn btn-secondary" onclick="clearAll()">C</button>
+            <button class="btn btn-secondary" onclick="deleteLast()">⌫</button>
+            <button class="btn btn-warning operator" onclick="setOperator('/')">÷</button>
+
+            <button class="btn btn-light" onclick="appendNumber(7)">7</button>
+            <button class="btn btn-light" onclick="appendNumber(8)">8</button>
+            <button class="btn btn-light" onclick="appendNumber(9)">9</button>
+            <button class="btn btn-warning operator" onclick="setOperator('*')">×</button>
+
+            <button class="btn btn-light" onclick="appendNumber(4)">4</button>
+            <button class="btn btn-light" onclick="appendNumber(5)">5</button>
+            <button class="btn btn-light" onclick="appendNumber(6)">6</button>
+            <button class="btn btn-warning operator" onclick="setOperator('-')">−</button>
+
+            <button class="btn btn-light" onclick="appendNumber(1)">1</button>
+            <button class="btn btn-light" onclick="appendNumber(2)">2</button>
+            <button class="btn btn-light" onclick="appendNumber(3)">3</button>
+            <button class="btn btn-warning operator" onclick="setOperator('+')">+</button>
+
+            <button class="btn btn-secondary" onclick="toggleSign()">+/-</button>
+            <button class="btn btn-light" onclick="appendNumber(0)">0</button>
+            <button class="btn btn-secondary" onclick="appendDecimal()">.</button>
+            <button class="btn btn-primary equal" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let currentInput = "0";
+        let previousInput = "";
+        let operator = "";
+
+        function updateScreen() {
+            document.getElementById("screen").value = currentInput;
+        }
+
+        function appendNumber(number) {
+            if (currentInput === "0" || currentInput === "-0") {
+                currentInput = currentInput.startsWith("-") ? "-"+number : number.toString();
+            } else {
+                currentInput += number;
+            }
+            updateScreen();
+        }
+
+        function appendDecimal() {
+            if (!currentInput.includes(".")) {
+                currentInput += ".";
+            }
+            updateScreen();
+        }
+
+        function setOperator(op) {
+            if (currentInput === "" && previousInput !== "") {
+                operator = op;
+                return;
+            }
+            if (previousInput !== "") {
+                calculate();
+            }
+            operator = op;
+            previousInput = currentInput;
+            currentInput = "";
+        }
+
+        function calculate() {
+            if (previousInput === "" || currentInput === "" || operator === "") return;
+            
+            let result;
+            let num1 = parseFloat(previousInput);
+            let num2 = parseFloat(currentInput);
+
+            switch (operator) {
+                case "+": result = num1 + num2; break;
+                case "-": result = num1 - num2; break;
+                case "*": result = num1 * num2; break;
+                case "/": result = num2 !== 0 ? num1 / num2 : "Error"; break;
+            }
+
+            currentInput = result.toString();
+            previousInput = "";
+            operator = "";
+            updateScreen();
+        }
+
+        function deleteLast() {
+            if (currentInput.length === 1 || currentInput === "-") {
+                currentInput = "0";
+            } else {
+                currentInput = currentInput.slice(0, -1);
+            }
+            updateScreen();
+        }
+
+        function clearEntry() {
+            currentInput = "0";
+            updateScreen();
+        }
+
+        function clearAll() {
+            currentInput = "0";
+            previousInput = "";
+            operator = "";
+            updateScreen();
+        }
+
+        function toggleSign() {
+            if (currentInput !== "0") {
+                currentInput = currentInput.startsWith("-") ? currentInput.slice(1) : "-" + currentInput;
+            }
+            updateScreen();
+        }
+    </script>
+
+</body>
+</html>
